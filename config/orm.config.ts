@@ -9,8 +9,15 @@ ConfigModule.forRoot({
   envFilePath: '.env',
 });
 
+// Hosted Postgres (e.g. Neon) is configured with a single DATABASE_URL and needs SSL.
+const useSsl = process.env.DATABASE_SSL
+  ? process.env.DATABASE_SSL === 'true'
+  : Boolean(process.env.DATABASE_URL);
+
 export const options = {
   type: 'postgres',
+  url: process.env.DATABASE_URL,
+  ssl: useSsl ? { rejectUnauthorized: false } : false,
   host: process.env.DATABASE_HOST || 'localhost',
   port: parseInt(String(process.env.DATABASE_PORT), 10) || 5432,
   username: process.env.DATABASE_USERNAME,

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: vetclinic-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci --legacy-peer-deps && npx nx build api --configuration=production && npx nx run database:mig-run
+    startCommand: node dist/apps/api/main.js
+    healthCheckPath: /docs
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: DATABASE_URL
+        sync: false
+      - key: NX_NO_CLOUD
+        value: "true"
+      - key: DATABASE_LOGGING
+        value: "false"
