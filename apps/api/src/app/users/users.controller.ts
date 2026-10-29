@@ -6,9 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe';
 import { ApiTags } from '@nestjs/swagger/dist';
+import { AdminGuard } from '../auth/admin.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -17,6 +19,7 @@ import { UsersService } from './users.service';
  * UsersController class.
  */
 @ApiTags('users')
+@UseGuards(AdminGuard)
 @Controller('users')
 export class UsersController {
   /**

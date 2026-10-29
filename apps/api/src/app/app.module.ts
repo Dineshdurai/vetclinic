@@ -13,6 +13,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import * as Joi from 'joi';
 import { configs } from '../../../../config/apps.config';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { AuthModule } from './auth/auth.module';
+import { ClientsModule } from './clients/clients.module';
+import { PetsModule } from './pets/pets.module';
+import { StatsModule } from './stats/stats.module';
 import { UsersModule } from './users/users.module';
 
 /**
@@ -50,6 +55,10 @@ import { UsersModule } from './users/users.module';
           then: Joi.optional(),
           otherwise: Joi.required(),
         }),
+        JWT_SECRET: Joi.string().min(16).required(),
+        ADMIN_USERNAME: Joi.string().optional(),
+        ADMIN_PASSWORD: Joi.string().optional(),
+        ADMIN_EMAIL: Joi.string().optional(),
         DATABASE_LOGGING: Joi.any().default(false).optional(),
         DATABASE_RETRY_ATTEMPTS: Joi.number().default(10).optional(),
         DATABASE_RETRY_DELAY: Joi.number().default(3000).optional(),
@@ -64,7 +73,12 @@ import { UsersModule } from './users/users.module';
       ProcedureCategory,
       User,
     ]),
+    AuthModule,
     UsersModule,
+    ClientsModule,
+    PetsModule,
+    AppointmentsModule,
+    StatsModule,
   ],
   controllers: [],
   providers: [],

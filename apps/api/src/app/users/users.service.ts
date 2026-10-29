@@ -1,5 +1,6 @@
 import { User } from '@app/database';
 import { Injectable } from '@nestjs/common';
+import { hash } from 'bcrypt';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,17 +28,18 @@ export class UsersService {
    * @returns - the new user.
    */
   async create(createUserDto: CreateUserDto) {
-    let user = await this.userRepository.findOneBy({
-      uuid: createUserDto.uuid,
-    });
+    const dto = { ...createUserDto, password: await hash(createUserDto.password, 10) };
+    let user = createUserDto.uuid
+      ? await this.userRepository.findOneBy({ uuid: createUserDto.uuid })
+      : null;
 
     if (!user) {
-      user = this.userRepository.create(createUserDto);
+      user = this.userRepository.create(dto);
     } else {
-      this.userRepository.merge(user, createUserDto);
+      this.userRepository.merge(user, dto);
     }
 
-    return this.userRepository.save(user);
+    return this.stripPassword(await this.userRepository.save(user));
   }
 
   /**
@@ -63,7 +65,7 @@ export class UsersService {
    * @returns - the user.
    */
   async findOne(uuid: string) {
-    const user = await this.userRepository.findBy({ uuid });
+    const user = await this.userRepository.findOneBy({ uuid });
 
     if (!user) {
       throw new NotFoundException();
@@ -86,9 +88,13 @@ export class UsersService {
       throw new NotFoundException();
     }
 
-    this.userRepository.merge(user, updateUserDto);
+    const { password, ...rest } = updateUserDto;
+    this.userRepository.merge(user, rest);
+    if (password) {
+      user.password = await hash(password, 10);
+    }
 
-    return this.userRepository.save(user);
+    return this.stripPassword(await this.userRepository.save(user));
   }
 
   /**
@@ -99,5 +105,10 @@ export class UsersService {
    */
   async remove(uuid: string) {
     return await this.userRepository.softDelete(uuid);
+  }
+
+  private stripPassword(user: User) {
+    delete user.password;
+    return user;
   }
 }

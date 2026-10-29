@@ -17,7 +17,7 @@ import {
 export class CreateUserDto {
   /** @member {string} uuid - the */
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   uuid: string;
 
   /** @member {string} firstName - the first name */

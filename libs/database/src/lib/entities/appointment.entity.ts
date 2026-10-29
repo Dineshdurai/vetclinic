@@ -44,6 +44,16 @@ export class Appointment extends BaseEntity {
   })
   scheduleAt: Date;
 
+  /** @member {string} scheduleTime - time of day (HH:mm) */
+  @Column({
+    name: 'schedule_time',
+    type: 'varchar',
+    length: 5,
+    nullable: true,
+    default: null,
+  })
+  scheduleTime: string;
+
   @ManyToOne(() => Pet, (pet) => pet.appointments, {
     onDelete: 'CASCADE',
     orphanedRowAction: 'soft-delete',
